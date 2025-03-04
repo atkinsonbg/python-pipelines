@@ -4,44 +4,28 @@
 ```
 CREATE TABLE Tenants (
     TenantID          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    Name             VARCHAR(255) NOT NULL,
+    Name             VARCHAR(255) NOT NULL, -- Customer name i.e. CareSource, Highmark
     TimeZone         VARCHAR(50),
-    UI_Settings      JSONB DEFAULT '{}'  -- Stores UI preferences
+    UI_Settings      JSONB DEFAULT '{}'  -- Stores UI preferences, this assumes the ui settings are the same for all instances
 );
 ```
 
 ```
 CREATE TABLE Products (
     ProductID       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    Name           VARCHAR(255) NOT NULL UNIQUE,
+    Name           VARCHAR(255) NOT NULL UNIQUE,  -- CareWebQI, Indicia
     Description    TEXT
 );
 ```
 
-```
+```--This is instance of a product which aligns 1 to 1 with Salesforce LMRs
 CREATE TABLE Tenant_Products (
     TenantProductID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     TenantID       UUID NOT NULL REFERENCES Tenants(TenantID) ON DELETE CASCADE,
     ProductID      UUID NOT NULL REFERENCES Products(ProductID) ON DELETE CASCADE,
-    LicensedAt     TIMESTAMP DEFAULT NOW(),
-    UNIQUE (TenantID, ProductID)  -- Ensures a tenant can't license the same product twice
-);
-```
-
-```
-CREATE TABLE Environments (
-    EnvironmentID   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    Name           VARCHAR(50) NOT NULL UNIQUE  -- E.g., "Dev", "Test", "Prod", "Stage"
-);
-```
-
-```
-CREATE TABLE Tenant_Product_Configs (
-    ConfigID        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    TenantProductID UUID NOT NULL REFERENCES Tenant_Products(TenantProductID) ON DELETE CASCADE,
-    EnvironmentID   UUID NOT NULL REFERENCES Environments(EnvironmentID) ON DELETE CASCADE,
-    ConfigSettings  JSONB DEFAULT '{}',  -- Stores per-environment product configurations
-    UNIQUE (TenantProductID, EnvironmentID) -- Ensures unique environment config per product per tenant
+    InstanceIdetifier  VARCHAR(255) NOT NULL,  -- this is the identifier(database name) used to get the config (caresoure.carewebqi.com, hhprod.carewebqi.com, etc....) may or may not have ".carewebqi.com" on it.
+    LicensedAt     TIMESTAMP DEFAULT NOW(), 
+    LicenseDetails JSONB DEFAULT '{}' -- the licence information for that instance of a tenantProduct
 );
 ```
 
