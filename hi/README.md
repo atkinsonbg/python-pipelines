@@ -4,7 +4,7 @@
 ```
 CREATE TABLE Tenants (
     TenantID          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    Name             VARCHAR(255) NOT NULL,
+    Name             VARCHAR(255) NOT NULL, -- Customer name i.e. CareSource, Highmark
     TimeZone         VARCHAR(50),
     UI_Settings      JSONB DEFAULT '{}'  -- Stores UI preferences
 );
@@ -13,22 +13,22 @@ CREATE TABLE Tenants (
 ```
 CREATE TABLE Products (
     ProductID       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    Name           VARCHAR(255) NOT NULL UNIQUE,
+    Name           VARCHAR(255) NOT NULL UNIQUE,  -- CareWebQI, Indicia
     Description    TEXT
 );
 ```
 
-```
+```--This is instance of a product which aligns 1 to 1 with Salesforce LMRs
 CREATE TABLE Tenant_Products (
     TenantProductID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     TenantID       UUID NOT NULL REFERENCES Tenants(TenantID) ON DELETE CASCADE,
     ProductID      UUID NOT NULL REFERENCES Products(ProductID) ON DELETE CASCADE,
-    LicensedAt     TIMESTAMP DEFAULT NOW(),
-    UNIQUE (TenantID, ProductID)  -- Ensures a tenant can't license the same product twice
+    LicensedAt     TIMESTAMP DEFAULT NOW(), 
+    UNIQUE (TenantID, ProductID)  -- Ensures a tenant can't license the same product twice THIS IS PROBABLY NOT TRUE!
 );
 ```
 
-```
+``` -- I Dont' think we need this
 CREATE TABLE Environments (
     EnvironmentID   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     Name           VARCHAR(50) NOT NULL UNIQUE  -- E.g., "Dev", "Test", "Prod", "Stage"
