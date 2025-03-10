@@ -169,3 +169,57 @@ JOIN Products P ON TP.ProductID = P.ProductID;
 }
 ```
 
+```
+using System.Data;
+using System.Threading.Tasks;
+using Npgsql;
+using NUnit.Framework;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Configurations;
+using DotNet.Testcontainers.WaitStrategies;
+
+namespace IntegrationTests
+{
+    [TestFixture]
+    public class PostgresContainerTests
+    {
+        private PostgreSqlTestcontainer _container;
+
+        [OneTimeSetUp]
+        public async Task OneTimeSetUp()
+        {
+            // Configure the PostgreSQL container with custom credentials and database name.
+            var builder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+                .WithDatabase(new PostgreSqlTestcontainerConfiguration
+                {
+                    Database = "testdb",
+                    Username = "testuser",
+                    Password = "testpass"
+                })
+                // Wait for the PostgreSQL port to become available.
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432));
+
+            _container = builder.Build();
+            await _container.StartAsync();
+        }
+
+        [OneTimeTearDown]
+        public async Task OneTimeTearDown()
+        {
+            await _container.StopAsync();
+        }
+
+        [Test]
+        public async Task Connection_Should_Be_Open()
+        {
+            // Use the container's connection string to open a connection.
+            using var connection = new NpgsqlConnection(_container.ConnectionString);
+            await connection.OpenAsync();
+
+            // Assert that the connection is open.
+            Assert.AreEqual(ConnectionState.Open, connection.State);
+        }
+    }
+}
+```
