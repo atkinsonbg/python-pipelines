@@ -48,6 +48,45 @@ CREATE TABLE TenantProductConfigsJson (
 );
 ```
 
+## API Response
+```
+{
+  "tenantId": "e5d44d56-6b67-4a0a-9c72-123abc456def",
+  "tenantName": "Acme Corp",
+  "products": [
+    {
+      "productId": "11111111-aaaa-bbbb-cccc-222222222222",
+      "productName": "Product A",
+      "license": {
+        "isActive": true,
+        "startDate": "2024-01-01",
+        "endDate": "2025-01-01"
+      },
+      "configuration": {
+        "timezone": "America/New_York",
+        "language": "en",
+        "theme": "dark"
+      }
+    },
+    {
+      "productId": "33333333-dddd-eeee-ffff-444444444444",
+      "productName": "Product B",
+      "license": {
+        "isActive": true,
+        "startDate": "2024-06-01",
+        "endDate": null
+      },
+      "configuration": {
+        "timezone": "Europe/London",
+        "language": "en-GB",
+        "enableAdvancedMode": "true"
+      }
+    }
+  ]
+}
+
+```
+
 ## SELECTS
 ```
 SELECT P.Name
