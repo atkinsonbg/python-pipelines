@@ -29,6 +29,25 @@ CREATE TABLE Tenant_Products (
 );
 ```
 
+```
+-- TenantProductConfigurations Table (Key-Value Based)
+CREATE TABLE TenantProductConfigurations (
+    TenantProductConfigId UUID PRIMARY KEY,
+    TenantId UUID NOT NULL REFERENCES Tenants(TenantId),
+    ProductId UUID NOT NULL REFERENCES Products(ProductId),
+    ConfigKey VARCHAR(100) NOT NULL,
+    ConfigValue TEXT NOT NULL
+);
+
+-- Alternative: JSON-based Configuration
+CREATE TABLE TenantProductConfigsJson (
+    TenantId UUID NOT NULL REFERENCES Tenants(TenantId),
+    ProductId UUID NOT NULL REFERENCES Products(ProductId),
+    Config JSONB NOT NULL,
+    PRIMARY KEY (TenantId, ProductId)
+);
+```
+
 ## SELECTS
 ```
 SELECT P.Name
